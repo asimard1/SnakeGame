@@ -1,7 +1,6 @@
 """Snake Game"""
 
 import arcade  # Game engine
-import time  # Control game speed
 import random  # Place food randomly
 import ctypes
 
@@ -10,21 +9,23 @@ user32 = ctypes.windll.user32
 FULL_WIDTH = user32.GetSystemMetrics(0)
 FULL_HEIGHT = user32.GetSystemMetrics(1)
 
+# For pixel perfect graphics
 POSSIBLE_SCALES = [5, 6, 8, 10, 12, 15, 20, 24, 30, 40, 60, 120]
+# Max amount of food for users to choose
 MAX_FOOD = 10
 
 # Read constants from config.ini
-reader = open("config.ini", "r")  # Open reader
-settings = list(map(lambda x: x.split(" = "), reader.read().split("\n")))
+with open("config.ini", "r") as reader:
+    settings = list(map(lambda x: x.split(" = "), reader.read().split("\n")))
 
-FULLSCREEN = list(filter(lambda x: x[0] == "FULLSCREEN",
-                         settings))[0][1] == "True"
-DARK_MODE = list(filter(lambda x: x[0] == "DARK_MODE",
-                        settings))[0][1] == "True"
-TILE_POS = int(list(filter(lambda x: x[0] == "TILE_POS", settings))[0][1])
-TILE_SCALE = POSSIBLE_SCALES[TILE_POS]
-WIN_WIDTH = FULL_WIDTH - 300
-WIN_HEIGHT = FULL_HEIGHT - 100
+    FULLSCREEN = list(filter(lambda x: x[0] == "FULLSCREEN",
+                            settings))[0][1] == "True"
+    DARK_MODE = list(filter(lambda x: x[0] == "DARK_MODE",
+                            settings))[0][1] == "True"
+    TILE_POS = int(list(filter(lambda x: x[0] == "TILE_POS", settings))[0][1])
+    TILE_SCALE = POSSIBLE_SCALES[TILE_POS]
+    WIN_WIDTH = FULL_WIDTH - 300
+    WIN_HEIGHT = FULL_HEIGHT - 100
 
 
 def update_size(bool):
@@ -504,7 +505,7 @@ def write_to_file(tab):
     for i in range(len(tab)):
         tab[i] = " = ".join(tab[i])
     new_file = "\n".join(tab)
-    f = open("config.ini", "w")
+    f = open("Python\snake_arcade\config.ini", "w")
     f.write(new_file)
     f.close()  # Close reader
 
