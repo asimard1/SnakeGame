@@ -9,6 +9,8 @@ user32 = ctypes.windll.user32
 FULL_WIDTH = user32.GetSystemMetrics(0)
 FULL_HEIGHT = user32.GetSystemMetrics(1)
 
+print(FULL_WIDTH, FULL_HEIGHT)
+
 # For pixel perfect graphics
 POSSIBLE_SCALES = [5, 6, 8, 10, 12, 15, 20, 24, 30, 40, 60, 120]
 # Max amount of food for users to choose
@@ -16,16 +18,23 @@ MAX_FOOD = 10
 
 # Read constants from config.ini
 with open("config.ini", "r") as reader:
+    # Cut file into usable list
     settings = list(map(lambda x: x.split(" = "), reader.read().split("\n")))
 
     FULLSCREEN = list(filter(lambda x: x[0] == "FULLSCREEN",
-                            settings))[0][1] == "True"
+                             settings))[0][1] == "True"
     DARK_MODE = list(filter(lambda x: x[0] == "DARK_MODE",
                             settings))[0][1] == "True"
     TILE_POS = int(list(filter(lambda x: x[0] == "TILE_POS", settings))[0][1])
     TILE_SCALE = POSSIBLE_SCALES[TILE_POS]
+    FOOD_NB = int(list(filter(lambda x: x[0] == "FOOD_NB", settings))[0][1])
+    HIGH_SCORE = int(
+        list(filter(lambda x: x[0] == "HIGH_SCORE", settings))[0][1])
+
+    # Windowed size, we make it a bit smaller
     WIN_WIDTH = FULL_WIDTH - 300
-    WIN_HEIGHT = FULL_HEIGHT - 100
+    WIN_HEIGHT = FULL_HEIGHT - 105
+    print(WIN_HEIGHT)
 
 
 def update_size(bool):
@@ -35,18 +44,16 @@ def update_size(bool):
                 FULL_HEIGHT // TILE_SCALE * TILE_SCALE]
     else:
         # If fullscreen is off
+        print([WIN_WIDTH // TILE_SCALE * TILE_SCALE,
+                WIN_HEIGHT // TILE_SCALE * TILE_SCALE])
         return [WIN_WIDTH // TILE_SCALE * TILE_SCALE,
                 WIN_HEIGHT // TILE_SCALE * TILE_SCALE]
 
 
+# Set right screen size at start
 [SCREEN_WIDTH, SCREEN_HEIGHT] = update_size(FULLSCREEN)
-
+# Set refresh rate
 GAME_SPEED = SCREEN_HEIGHT / TILE_SCALE / 2
-
-FOOD_NB = int(list(filter(lambda x: x[0] == "FOOD_NB", settings))[0][1])
-HIGH_SCORE = int(list(filter(lambda x: x[0] == "HIGH_SCORE", settings))[0][1])
-
-reader.close()  # Close reader
 
 # Constants for the window
 SCREEN_TITLE = "Snake Game"  # Title of window
@@ -505,7 +512,7 @@ def write_to_file(tab):
     for i in range(len(tab)):
         tab[i] = " = ".join(tab[i])
     new_file = "\n".join(tab)
-    f = open("Python\snake_arcade\config.ini", "w")
+    f = open("config.ini", "w")
     f.write(new_file)
     f.close()  # Close reader
 
@@ -582,7 +589,7 @@ def text_color(bool):
 
 
 def menu_color(bool):
-    return arcade.csscolor.INDIGO if bool else arcade.csscolor.LIGHT_SKY_BLUE
+    return arcade.csscolor.BLACK if bool else arcade.csscolor.LIGHT_SKY_BLUE
 
 
 def game_color(bool):
