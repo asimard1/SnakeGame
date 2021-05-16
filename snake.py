@@ -1,18 +1,25 @@
 """Snake Game"""
+"""To create executable : pyinstaller snake.py
+keep only dist\snake and copy config.ini inside"""
 
-import arcade  # Game engine
-import random  # Place food randomly
-import ctypes
 
 # Read screen resolution
+import arcade  # Game engine
+import random  # Place food randomly
+import ctypes  # Get resolution
+from sympy import divisors
 user32 = ctypes.windll.user32
 FULL_WIDTH = user32.GetSystemMetrics(0)
 FULL_HEIGHT = user32.GetSystemMetrics(1)
 
-print(FULL_WIDTH, FULL_HEIGHT)
+
+def intersection(list1, list2):
+    return list(set(list1) & set(list2))
+
 
 # For pixel perfect graphics
-POSSIBLE_SCALES = [5, 6, 8, 10, 12, 15, 20, 24, 30, 40, 60, 120]
+POSSIBLE_SCALES = intersection(divisors(FULL_WIDTH), divisors(FULL_HEIGHT))
+POSSIBLE_SCALES.sort()
 # Max amount of food for users to choose
 MAX_FOOD = 10
 
@@ -25,27 +32,27 @@ with open("config.ini", "r") as reader:
                              settings))[0][1] == "True"
     DARK_MODE = list(filter(lambda x: x[0] == "DARK_MODE",
                             settings))[0][1] == "True"
-    TILE_POS = int(list(filter(lambda x: x[0] == "TILE_POS", settings))[0][1])
+    TILE_POS = min(int(list(filter(lambda x: x[0] == "TILE_POS", settings))[0][1]),
+                   len(POSSIBLE_SCALES))
     TILE_SCALE = POSSIBLE_SCALES[TILE_POS]
     FOOD_NB = int(list(filter(lambda x: x[0] == "FOOD_NB", settings))[0][1])
     HIGH_SCORE = int(
         list(filter(lambda x: x[0] == "HIGH_SCORE", settings))[0][1])
 
     # Windowed size, we make it a bit smaller
+    # (not actual size, actually determined by update_size)
     WIN_WIDTH = FULL_WIDTH - 300
-    WIN_HEIGHT = FULL_HEIGHT - 105
-    print(WIN_HEIGHT)
+    WIN_HEIGHT = FULL_HEIGHT - 120
 
 
 def update_size(bool):
+    """Gets window size"""
     if bool:
         # If fullscreen is on
         return [FULL_WIDTH // TILE_SCALE * TILE_SCALE,
                 FULL_HEIGHT // TILE_SCALE * TILE_SCALE]
     else:
         # If fullscreen is off
-        print([WIN_WIDTH // TILE_SCALE * TILE_SCALE,
-                WIN_HEIGHT // TILE_SCALE * TILE_SCALE])
         return [WIN_WIDTH // TILE_SCALE * TILE_SCALE,
                 WIN_HEIGHT // TILE_SCALE * TILE_SCALE]
 
